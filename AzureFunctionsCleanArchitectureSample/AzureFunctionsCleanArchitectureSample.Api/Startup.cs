@@ -1,4 +1,8 @@
-﻿using MediatR;
+﻿using AzureFunctionsCleanArchitectureSample.Api.Middleware;
+using AzureFunctionsCleanArchitectureSample.Api.Pipeline;
+using MediatR;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
@@ -11,7 +15,13 @@ namespace AzureFunctionsCleanArchitectureSample.Api
         public override void Configure(IFunctionsHostBuilder builder)
         {
             builder.Services.AddHttpContextAccessor();
-            builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
+            builder.Services.AddMediatR(Assembly.GetExecutingAssembly());            
+            builder.Services.AddTransient<IPipelineFactory, CreateItemPipelineFactory>();
+            ///
+            ///
+            ///
+            /// builder.Services.Add<IContract, ExactImplOfContract>()
+
         }
     }
 }

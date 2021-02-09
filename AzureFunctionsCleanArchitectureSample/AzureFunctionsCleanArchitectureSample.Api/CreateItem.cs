@@ -9,6 +9,8 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using MediatR;
 using AzureFunctionsCleanArchitectureSample.Api.Command;
+using AzureFunctionsCleanArchitectureSample.Api.Middleware;
+using AzureFunctionsCleanArchitectureSample.Api.Pipeline;
 
 namespace AzureFunctionsCleanArchitectureSample.Api
 {
@@ -16,11 +18,13 @@ namespace AzureFunctionsCleanArchitectureSample.Api
     {
         private readonly IMediator _mediator;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IPipelineFactory _pipeline;
 
-        public ApiService(IMediator mediator, IHttpContextAccessor httpContextAccessor)
+        public ApiService(IMediator mediator, IHttpContextAccessor httpContextAccessor, IPipelineFactory pipeline)
         {
             _mediator = mediator;
             _httpContextAccessor = httpContextAccessor;
+            _pipeline = pipeline;
         }
         [FunctionName("CreateItem")]
         public async Task<IActionResult> Create(
@@ -28,10 +32,23 @@ namespace AzureFunctionsCleanArchitectureSample.Api
             ExecutionContext context,
             ILogger log)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
+            /*log.LogInformation("C# HTTP trigger function processed a request.");
+            ActionResult result = new OkObjectResult("empty");
+            
+            var middleware = new ExceptionHandlerMiddleware(new FunctionMiddleware(async (ctx) =>
+            {
+                
+                var res = await _mediator.Send(new CreateItemCommand(ctx.Request.Query["name"], ctx.Request.Body));
+
+                return await Task.FromResult(new OkObjectResult(res));
 
 
-            return await Task.FromResult(new OkObjectResult(_mediator.Send(new CreateItemCommand(req.Query["name"], req.Body))));
+            }));
+            await middleware.InvokeAsync(_httpContextAccessor.HttpContext);   */
+
+            return await _pipeline
+                            .Use(new ExceptionHandlerMiddleware())
+                          .Run(async ctx => new OkObjectResult(await _mediator.Send(new CreateItemCommand(ctx.Request.Query["name"], ctx.Request.Body))));
         }
 
         [FunctionName("UpdateItem")]
@@ -39,14 +56,22 @@ namespace AzureFunctionsCleanArchitectureSample.Api
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
             ILogger log)
         {
+
+
             log.LogInformation("C# HTTP trigger function processed a request.");
+            string name = string.Empty;
+            try
+            {
+                name = req.Query["name"];
 
-            string name = req.Query["name"];
+                string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+                dynamic data = JsonConvert.DeserializeObject(requestBody);
+                name = name ?? data?.name;
+            }
+            catch (Exception ex)
+            {
 
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
-            name = name ?? data?.name;
-
+            }
             string responseMessage = string.IsNullOrEmpty(name)
                 ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
                 : $"Hello, {name}. This HTTP triggered function executed successfully.";
