@@ -18,9 +18,9 @@ namespace AzureFunctionsCleanArchitectureSample.Api
     {
         private readonly IMediator _mediator;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IPipelineFactory _pipeline;
+        private readonly IPipeline _pipeline;
 
-        public ApiService(IMediator mediator, IHttpContextAccessor httpContextAccessor, IPipelineFactory pipeline)
+        public ApiService(IMediator mediator, IHttpContextAccessor httpContextAccessor, IPipeline pipeline)
         {
             _mediator = mediator;
             _httpContextAccessor = httpContextAccessor;
@@ -31,24 +31,11 @@ namespace AzureFunctionsCleanArchitectureSample.Api
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
             ExecutionContext context,
             ILogger log)
-        {
-            /*log.LogInformation("C# HTTP trigger function processed a request.");
-            ActionResult result = new OkObjectResult("empty");
-            
-            var middleware = new ExceptionHandlerMiddleware(new FunctionMiddleware(async (ctx) =>
-            {
-                
-                var res = await _mediator.Send(new CreateItemCommand(ctx.Request.Query["name"], ctx.Request.Body));
-
-                return await Task.FromResult(new OkObjectResult(res));
-
-
-            }));
-            await middleware.InvokeAsync(_httpContextAccessor.HttpContext);   */
+        {            
 
             return await _pipeline
                             .Use(new ExceptionHandlerMiddleware())
-                          .Run(async ctx => new OkObjectResult(await _mediator.Send(new CreateItemCommand(ctx.Request.Query["name"], ctx.Request.Body))));
+                          .RunAsync(async ctx => new OkObjectResult(await _mediator.Send(new CreateItemCommand(ctx.Request.Query["name"], ctx.Request.Body))));
         }
 
         [FunctionName("UpdateItem")]

@@ -16,7 +16,7 @@ namespace AzureFunctionsCleanArchitectureSample.Api
         {
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddMediatR(Assembly.GetExecutingAssembly());            
-            builder.Services.AddTransient<IPipelineFactory, CreateItemPipelineFactory>();
+            builder.Services.AddTransient<IPipeline, MiddlewarePipeline>();
             ///
             ///
             ///

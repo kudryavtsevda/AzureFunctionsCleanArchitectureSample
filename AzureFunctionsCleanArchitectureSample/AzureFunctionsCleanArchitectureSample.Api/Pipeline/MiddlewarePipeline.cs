@@ -9,23 +9,26 @@ using System.Threading.Tasks;
 
 namespace AzureFunctionsCleanArchitectureSample.Api.Pipeline
 {
-    public class CreateItemPipelineFactory : BasePipelineFactory, IPipelineFactory
+    public class MiddlewarePipeline : BaseMiddlewarePipeline, IPipeline
     {
         private List<BaseMiddleware> _middlewares;
-        public CreateItemPipelineFactory(IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor.HttpContext)
+        private IActionResult _result;
+
+        public MiddlewarePipeline(IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor.HttpContext)
         {
             _middlewares = new List<BaseMiddleware>();
         }
 
-        public async Task<IActionResult> Run(Func<HttpContext, Task<IActionResult>> func)
+        public async Task<IActionResult> RunAsync(Func<HttpContext, Task<IActionResult>> func)
         {
             AddMiddleware(new FunctionMiddleware(func));
 
             await _middlewares.First().InvokeAsync(HttpContext);
-            return _middlewares.Last(x => x.ActionResult != null).ActionResult;
+
+            return _result;
         }
 
-        public IPipelineFactory Use(BaseMiddleware middleware)
+        public IPipeline Use(BaseMiddleware middleware)
         {
             AddMiddleware(middleware);
 
@@ -40,6 +43,13 @@ namespace AzureFunctionsCleanArchitectureSample.Api.Pipeline
             }
 
             _middlewares.Add(middleware);
+
+            middleware.ResultCreated += GetCurrentResult;
+        }
+
+        private void GetCurrentResult(object sender, IActionResult e)
+        {
+            _result = e;
         }
     }
 }

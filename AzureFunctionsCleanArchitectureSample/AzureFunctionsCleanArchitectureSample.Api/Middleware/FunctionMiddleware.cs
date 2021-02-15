@@ -17,7 +17,7 @@ namespace AzureFunctionsCleanArchitectureSample.Api.Middleware
         }
         public override async Task InvokeAsync(HttpContext context)
         {
-            ActionResult = await _func(context);
+            ActionResult = await _func(context);           
 
             if (Next != null)
                 await Next.InvokeAsync(context);

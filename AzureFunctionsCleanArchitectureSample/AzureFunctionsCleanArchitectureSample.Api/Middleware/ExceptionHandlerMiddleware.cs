@@ -9,13 +9,7 @@ namespace AzureFunctionsCleanArchitectureSample.Api.Middleware
 {
     public class ExceptionHandlerMiddleware : BaseMiddleware
     {
-        public ExceptionHandlerMiddleware()
-        {
-
-        }
-        public ExceptionHandlerMiddleware(BaseMiddleware next) : base(next)
-        {
-        }
+        public ExceptionHandlerMiddleware() { }
 
         public override async Task InvokeAsync(HttpContext ctx)
         {

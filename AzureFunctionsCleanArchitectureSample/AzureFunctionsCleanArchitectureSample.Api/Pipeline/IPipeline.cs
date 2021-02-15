@@ -8,9 +8,9 @@ using Microsoft.AspNetCore.Http;
 
 namespace AzureFunctionsCleanArchitectureSample.Api.Pipeline
 {
-    public interface IPipelineFactory
+    public interface IPipeline
     {
-        IPipelineFactory Use(BaseMiddleware middleware);
-        Task<IActionResult> Run(Func<HttpContext, Task<IActionResult>> func);
+        IPipeline Use(BaseMiddleware middleware);
+        Task<IActionResult> RunAsync(Func<HttpContext, Task<IActionResult>> func);
     }
 }

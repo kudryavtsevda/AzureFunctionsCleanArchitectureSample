@@ -9,10 +9,9 @@ namespace AzureFunctionsCleanArchitectureSample.Api.Middleware
 {
     public abstract class BaseMiddleware
     {
-        public BaseMiddleware()
-        {
+        private IActionResult _actionResult;
 
-        }
+        public BaseMiddleware() { }
 
         public BaseMiddleware(BaseMiddleware next)
         {
@@ -23,6 +22,25 @@ namespace AzureFunctionsCleanArchitectureSample.Api.Middleware
 
         public abstract Task InvokeAsync(HttpContext context);
 
-        public IActionResult ActionResult { get; protected set; }
+        protected IActionResult ActionResult
+        {
+            get
+            {
+                return _actionResult;
+            }
+
+            set
+            {
+                _actionResult = value;
+                OnResultCreated();
+            }
+        }
+
+        public event EventHandler<IActionResult> ResultCreated;
+
+        private void OnResultCreated()
+        {
+            ResultCreated?.Invoke(this, _actionResult);
+        }
     }
 }
