@@ -42,14 +42,8 @@ namespace AzureFunctionsCleanArchitectureSample.Api.Pipeline
                 _middlewares.Last().Next = middleware;
             }
 
+            middleware.ResultChangedHandler = (result) => _result = result;
             _middlewares.Add(middleware);
-
-            middleware.ResultCreated += GetCurrentResult;
-        }
-
-        private void GetCurrentResult(object sender, IActionResult e)
-        {
-            _result = e;
         }
     }
 }

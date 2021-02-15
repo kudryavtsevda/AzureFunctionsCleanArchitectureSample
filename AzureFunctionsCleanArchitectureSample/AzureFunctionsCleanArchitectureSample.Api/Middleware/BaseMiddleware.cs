@@ -32,15 +32,17 @@ namespace AzureFunctionsCleanArchitectureSample.Api.Middleware
             set
             {
                 _actionResult = value;
-                OnResultCreated();
+                OnResultChanged();
             }
         }
 
-        public event EventHandler<IActionResult> ResultCreated;
+        public Action<IActionResult> ResultChangedHandler { get => resultChangedHandler; set => resultChangedHandler = value; }
 
-        private void OnResultCreated()
+        private Action<IActionResult> resultChangedHandler;
+
+        private void OnResultChanged()
         {
-            ResultCreated?.Invoke(this, _actionResult);
+            ResultChangedHandler?.Invoke(_actionResult);
         }
     }
 }
