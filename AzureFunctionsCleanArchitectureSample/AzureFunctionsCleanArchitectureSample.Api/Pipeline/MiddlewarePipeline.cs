@@ -12,7 +12,6 @@ namespace AzureFunctionsCleanArchitectureSample.Api.Pipeline
     public class MiddlewarePipeline : BaseMiddlewarePipeline, IPipeline
     {
         private List<BaseMiddleware> _middlewares;
-        private IActionResult _result;
 
         public MiddlewarePipeline(IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor.HttpContext)
         {
@@ -23,9 +22,9 @@ namespace AzureFunctionsCleanArchitectureSample.Api.Pipeline
         {
             AddMiddleware(new FunctionMiddleware(func));
 
-            await _middlewares.First().InvokeAsync(HttpContext);
+            await _middlewares.First().InvokeAsync(Context);
 
-            return _result;
+            return Context.ActionResult;
         }
 
         public IPipeline Use(BaseMiddleware middleware)
@@ -42,7 +41,6 @@ namespace AzureFunctionsCleanArchitectureSample.Api.Pipeline
                 _middlewares.Last().Next = middleware;
             }
 
-            middleware.ResultChangedHandler = (res) => _result = res;
             _middlewares.Add(middleware);
         }
     }

@@ -20,29 +20,6 @@ namespace AzureFunctionsCleanArchitectureSample.Api.Middleware
 
         public BaseMiddleware Next { get; set; }
 
-        public abstract Task InvokeAsync(HttpContext context);
-
-        protected IActionResult ActionResult
-        {
-            get
-            {
-                return _actionResult;
-            }
-
-            set
-            {
-                _actionResult = value;
-                OnResultChanged();
-            }
-        }
-
-        public Action<IActionResult> ResultChangedHandler { get => resultChangedHandler; set => resultChangedHandler = value; }
-
-        private Action<IActionResult> resultChangedHandler;
-
-        private void OnResultChanged()
-        {
-            ResultChangedHandler?.Invoke(_actionResult);
-        }
+        public abstract Task InvokeAsync(PipelineContext context);
     }
 }

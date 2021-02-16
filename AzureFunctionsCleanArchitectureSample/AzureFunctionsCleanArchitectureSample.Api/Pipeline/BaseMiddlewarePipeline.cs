@@ -1,14 +1,15 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AzureFunctionsCleanArchitectureSample.Api.Middleware;
+using Microsoft.AspNetCore.Http;
 
 namespace AzureFunctionsCleanArchitectureSample.Api.Pipeline
 {
     public abstract class BaseMiddlewarePipeline
-    {        
+    {
         protected BaseMiddlewarePipeline(HttpContext httpContext)
         {
-            HttpContext = httpContext;
+            Context = new PipelineContext(httpContext);
         }
 
-        protected HttpContext HttpContext { get; private set; }
+        protected PipelineContext Context { get; private set; }
     }
 }

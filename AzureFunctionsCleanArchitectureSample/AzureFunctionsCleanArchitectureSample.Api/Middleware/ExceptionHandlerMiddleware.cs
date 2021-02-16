@@ -11,16 +11,16 @@ namespace AzureFunctionsCleanArchitectureSample.Api.Middleware
     {
         public ExceptionHandlerMiddleware() { }
 
-        public override async Task InvokeAsync(HttpContext ctx)
+        public override async Task InvokeAsync(PipelineContext context)
         {
             if (Next == null) throw new InvalidOperationException();
             try
             {
-                await Next.InvokeAsync(ctx);
+                await Next.InvokeAsync(context);
             }
             catch (Exception ex)
             {
-                ActionResult = new BadRequestObjectResult(new { Message = ex.Message });
+                context.ActionResult = new BadRequestObjectResult(new { Message = ex.Message });
             }
         }
     }
