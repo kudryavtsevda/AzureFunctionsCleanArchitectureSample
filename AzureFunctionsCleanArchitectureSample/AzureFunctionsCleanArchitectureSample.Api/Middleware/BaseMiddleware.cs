@@ -9,8 +9,6 @@ namespace AzureFunctionsCleanArchitectureSample.Api.Middleware
 {
     public abstract class BaseMiddleware
     {
-        private IActionResult _actionResult;
-
         public BaseMiddleware() { }
 
         public BaseMiddleware(BaseMiddleware next)

@@ -24,7 +24,7 @@ namespace AzureFunctionsCleanArchitectureSample.Api.Pipeline
 
             await _middlewares.First().InvokeAsync(Context);
 
-            return Context.ActionResult;
+            return Context.PipelineResult;
         }
 
         public IPipeline Use(BaseMiddleware middleware)

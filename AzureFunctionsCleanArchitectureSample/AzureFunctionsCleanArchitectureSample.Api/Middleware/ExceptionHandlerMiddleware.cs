@@ -20,7 +20,7 @@ namespace AzureFunctionsCleanArchitectureSample.Api.Middleware
             }
             catch (Exception ex)
             {
-                context.ActionResult = new BadRequestObjectResult(new { Message = ex.Message });
+                context.PipelineResult = new BadRequestObjectResult(new { Message = ex.Message });
             }
         }
     }

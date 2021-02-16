@@ -11,6 +11,6 @@ namespace AzureFunctionsCleanArchitectureSample.Api.Middleware
         }
 
         public HttpContext HttpContext { get; }
-        public IActionResult ActionResult { get; set; }
+        public IActionResult PipelineResult { get; set; }
     }
 }
